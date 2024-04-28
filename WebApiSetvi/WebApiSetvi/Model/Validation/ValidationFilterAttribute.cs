@@ -13,7 +13,7 @@ namespace WebApiSetvi.Model.Validation
                 string errorMessages = string.Join("; ", context.ModelState.Values
                     .SelectMany(v => v.Errors)
                     .Select(e => e.ErrorMessage));
-                context.Result = new BadRequestObjectResult(new Result<List<User>>(HttpStatusCode.BadRequest, errorMessages));
+                context.Result = new BadRequestObjectResult(new Result<object>(HttpStatusCode.BadRequest, errorMessages));
             }
         }
         public void OnActionExecuted(ActionExecutedContext context) { }

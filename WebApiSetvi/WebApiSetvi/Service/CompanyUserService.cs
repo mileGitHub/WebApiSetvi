@@ -1,4 +1,5 @@
 ﻿
+using System.ComponentModel.Design;
 using System.Net;
 using WebApiSetvi.Model;
 using WebApiSetvi.Repository.Interfaces;
@@ -26,14 +27,21 @@ namespace WebApiSetvi.Service
 				}
 				return result;
 			}
-			catch (Exception ex) 
+			catch
 			{
-				return new Result<List<User>>(HttpStatusCode.InternalServerError, "Exception: " + ex.Message);
+				throw;
 			}
 		}
 		public async Task<Result<User>> AddUser(User user)
 		{
-			return await _userRepository.AddUser(user);
+			try
+			{
+				return await _userRepository.AddUser(user);
+			}
+			catch
+			{
+				throw;
+			}
 		}
 	}
 }

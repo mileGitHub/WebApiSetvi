@@ -9,7 +9,6 @@ namespace WebApiSetvi.Repository
 {
 	public class CompanyUserRepository : ICompanyUserRepository
 	{
-		//private readonly IUserRepository _userRepository;
 		private readonly string _connectionString;
 		public CompanyUserRepository(string connectionString)
 		{
@@ -80,18 +79,26 @@ namespace WebApiSetvi.Repository
 				}
 				else
 				{
-					return new Result<User>(HttpStatusCode.BadRequest, "Failed to return user!");
+					return new Result<User>(HttpStatusCode.InternalServerError, "Failed to insert/return user!");
 				}
 			}
 			catch (SqlException ex)
 			{
-				return new Result<User>(HttpStatusCode.InternalServerError, " SQL DB Exception: " + ex.Message);
+				if (ex.Number == 547)
+				{
+					// Foreign key constraint violation)
+					return new Result<User>(HttpStatusCode.BadRequest, " SQL DB Exception: " + ex.Message);
+				}
+				else
+				{
+					// Other SQL errors
+					return new Result<User>(HttpStatusCode.InternalServerError, " SQL DB Exception: " + ex.Message); ;
+				}
 			}
 			catch (Exception ex)
 			{
 				return new Result<User>(HttpStatusCode.InternalServerError, "Exception: " + ex.Message);
 			}
-
 		}
 	}
 }

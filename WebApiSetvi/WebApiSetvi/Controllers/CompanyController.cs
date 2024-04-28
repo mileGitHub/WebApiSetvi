@@ -20,46 +20,47 @@ namespace WebApiSetvi.Controllers
 		[HttpGet("{companyId:int}/users")]
 		public async Task<IActionResult> GetCompanyUsers(int companyId)
 		{
-			if (!(companyId > 0))
-			{
-				//return StatusCode(400, new Result<List<User>>(HttpStatusCode.BadRequest, "Value must be > 0"));
-				return ResponseHandler.CreateResponse(new Result<object>(HttpStatusCode.BadRequest, "Value must be > 0"));
-			}
 			try
 			{
+				//companyId must be an integer value (companyId:int), so we will check is companyId > 0
+				if (!(companyId > 0))
+				{
+					return ResponseHandler.CreateResponse(new Result<object>(HttpStatusCode.BadRequest, "CompanyId must be > 0"));
+				}
+
 				var response = await _userService.GetUsersAsync(companyId);
 				return ResponseHandler.CreateResponse(response);
 			}
 			catch (Exception ex)
 			{
-				//return StatusCode(500, new Result<List<User>>(HttpStatusCode.InternalServerError, "Exception: " + ex.Message));
-				return ResponseHandler.CreateResponse(new Result<object>(HttpStatusCode.InternalServerError, "Exception: " + ex.Message));
-				
+				return ResponseHandler.CreateResponse(new Result<object>(HttpStatusCode.InternalServerError, "Exception: " + ex.Message));	
 			}
 		}
 
+		//ValidationFilterAttribute is used for User model validation (FirstName, LastName and Email)
 		[ServiceFilter(typeof(ValidationFilterAttribute))]
 		[HttpPost("{companyId}/user")]
 		public async Task<IActionResult> AddUser(string companyId, [FromBody] User user)
 		{
-			if (!int.TryParse(companyId, out int companyIdInt))
-			{
-				return ResponseHandler.CreateResponse(new Result<object>(HttpStatusCode.BadRequest, "CompanyId must be a int value"));
-			}
-			if (!(companyIdInt > 0))
-			{
-				return ResponseHandler.CreateResponse(new Result<object>(HttpStatusCode.BadRequest, "Value must be > 0"));
-			}
-			//ValidationFilterAttribute is used for User model validation
 			try
 			{
+				//received companyId can be string value, in that case responsed with status code - 400
+				if (!int.TryParse(companyId, out int companyIdInt))
+				{
+					return ResponseHandler.CreateResponse(new Result<object>(HttpStatusCode.BadRequest, "CompanyId must be a int value"));
+				}
+				if (!(companyIdInt > 0))
+				{
+					return ResponseHandler.CreateResponse(new Result<object>(HttpStatusCode.BadRequest, "CompanyId must be > 0"));
+				}
+
 				user.CompanyId = companyIdInt;
 				var response = await _userService.AddUser(user);
 				return ResponseHandler.CreateResponse(response);
 			}
 			catch (Exception ex)
 			{
-				return ResponseHandler.CreateResponse(new Result<List<User>>(HttpStatusCode.InternalServerError, "Exception: " + ex.Message)); 
+				return ResponseHandler.CreateResponse(new Result<object>(HttpStatusCode.InternalServerError, "Exception: " + ex.Message)); 
 			}
 		}
 	}
