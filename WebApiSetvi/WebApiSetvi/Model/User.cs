@@ -28,5 +28,7 @@ namespace WebApiSetvi.Model
 		public string? Email { get; set; }
 
 		public int CompanyId { get; set; }
+
+		//main111
 	}
 }
